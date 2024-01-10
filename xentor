@@ -1,36 +1,22 @@
 #!/bin/bash
-
-# Check if a file is provided as an argument
 if [ "$#" -ne 1 ]; then
   echo "Usage: $0 <file>"
   exit 1
 fi
-
 file="$1"
-
-# Check if the file exists
 if [ ! -f "$file" ]; then
   echo "Error: File '$file' not found."
   exit 1
 fi
-
-# Function to check if "alert(1)" is present in the source code
 check_alert() {
   url="$1"
   endpoint="$2"
-
-  # Send request using curl and store the source code in a variable
   source_code=$(curl -s "$url")
-
-  # Check if "alert(1)" is present in the source code
   if [[ $source_code =~ "alert(1)" ]]; then
     echo "Vulnerable endpoint found: $endpoint in URL: $url"
   fi
 }
-
-# Loop through the URLs in the file and call the check_alert function
 while IFS= read -r line; do
-  # Extract endpoint from the line (assuming the endpoint is the last part of the line)
-  endpoint=$(basename "$line")
+endpoint=$(basename "$line")
   check_alert "$line" "$endpoint"
 done < "$file"
